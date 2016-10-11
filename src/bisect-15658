@@ -55,9 +55,9 @@ main() {
 	echo "$binfile, $srcfile"
 
 	cd "$srcpath"
-	$GO build -o "$binfile" "$srcfile"
+	$GO build -o "../bin/$binfile" "$srcfile"
 
-	GOMAXPROCS=8 GOGC=5 GODEBUG=gctrace=2,schedtrace=100 ./$binfile
+	GOMAXPROCS=8 GOGC=5 GODEBUG=gctrace=2,schedtrace=100 ../bin/$binfile
 	ret="$?"
 
 	cd "$CWD"
