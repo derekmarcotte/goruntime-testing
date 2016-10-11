@@ -30,37 +30,46 @@ package main
 
 /* stdlib includes */
 import (
-        "fmt"
-        "os/exec"
+	"fmt"
+	"os/exec"
 )
 
 func run(done chan struct{}) {
-        cmd := exec.Command("true")
-        if err := cmd.Start(); err != nil {
-                goto finished
-        }
+	cmd := exec.Command("/usr/bin/true")
+	cmd.Start()
+	cmd.Wait()
 
-        cmd.Wait()
-
-finished:
-        done <- struct{}{}
-        return
+	done <- struct{}{}
+	return
 }
 
 func main() {
-        fmt.Println("Starting a bunch of goroutines...")
+	fmt.Println("Starting a bunch of goroutines...")
 
-        // 8 & 16 are arbitrary
-        done := make(chan struct{}, 16)
+	runs := 0
+	// longest number of garbage collections without crash observed to date
+	const maxgc = 25236291
+	// runs ~= 60/gc
+	const maxruns = 2 * 60 * maxgc
 
-        for i := 0; i < 8; i++ {
-                go run(done)
-        }
+	// 8 & 16 are arbitrary
+	done := make(chan struct{}, 16)
 
-        for {
-                select {
-                case <-done:
-                        go run(done)
-                }
-        }
+	for i := 0; i < 8; i++ {
+		go run(done)
+		runs++
+	}
+
+	for {
+		select {
+		case <-done:
+			go run(done)
+			runs++
+		}
+
+		if runs > maxruns {
+			fmt.Println("Reached maxgc iterations, exiting normally.")
+			break
+		}
+	}
 }

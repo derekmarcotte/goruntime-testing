@@ -1,0 +1,30 @@
+git bisect start
+# bad: [3dbc53ae6ad4e3b93f31d35d98b38f6dda25f4ee] go1.3.3
+git bisect bad 3dbc53ae6ad4e3b93f31d35d98b38f6dda25f4ee
+# good: [402d3590b54e4a0df9fb51ed14b2999e85ce0b76] go1.2
+git bisect good 402d3590b54e4a0df9fb51ed14b2999e85ce0b76
+# good: [04e95a1a56c35f63e3ac51c9d9973297a57c2b10] api: add go1.2.txt, use in tests
+git bisect good 04e95a1a56c35f63e3ac51c9d9973297a57c2b10
+# bad: [8d2465ab501eb186ffe869019f3d69b125954993] go/misc/makerelease: pin go-tour repo to a specific revision
+git bisect bad 8d2465ab501eb186ffe869019f3d69b125954993
+# good: [3be4d95731a17073afb1f69bde264eecbdfa32bb] runtime: change map iteration randomization to use intra-bucket offset
+git bisect good 3be4d95731a17073afb1f69bde264eecbdfa32bb
+# bad: [2ea859a7797472d6c7e401057d313c1d468a7a09] runtime: refactor level-triggered IO support Remove GOOS_solaris ifdef from netpoll code, instead introduce runtime edge/level triggered IO flag. Replace armread/armwrite with a single arm(mode) function, that's how all other interfaces look like and these functions will need to do roughly the same thing anyway.
+git bisect bad 2ea859a7797472d6c7e401057d313c1d468a7a09
+# good: [86a3a542844a8c6040656006697e16b207c1d3f6] runtime: fix windows build Currently windows crashes because early allocs in schedinit try to allocate tiny memory blocks, but m->p is not yet setup. I've considered calling procresize(1) earlier in schedinit, but this refactoring is better and must fix the issue as well. Fixes #7218.
+git bisect good 86a3a542844a8c6040656006697e16b207c1d3f6
+# bad: [8a2dd16c7489493dab025a2edf3c58c3acab3d3e] encoding/json: mention escaping of '&' Fixes #7034.
+git bisect bad 8a2dd16c7489493dab025a2edf3c58c3acab3d3e
+# good: [99d23dfdfd19204d76877a7322c298726aba6d9a] crypto/rand: add tests for Int, Prime
+git bisect good 99d23dfdfd19204d76877a7322c298726aba6d9a
+# good: [9013eb7b6d07dd5200cf75b9052e42c9ff50a92c] A+C: Kelvin Foo Chuan Lyi (individual CLA)
+git bisect good 9013eb7b6d07dd5200cf75b9052e42c9ff50a92c
+# bad: [e6d8bfe218a5f387d7aceddcaee5067a59181838] os/exec: fix Command with relative paths
+git bisect bad e6d8bfe218a5f387d7aceddcaee5067a59181838
+# good: [3f8455892948ab615b29b5ab761618a9b9dd0ec6] A+C: Tudor Golubenco (individual CLA)
+git bisect good 3f8455892948ab615b29b5ab761618a9b9dd0ec6
+# good: [07cbf550ce1c57ac2bbd001b46817b9b00e763cb] A+C: Gordon Klaus (individual CLA)
+git bisect good 07cbf550ce1c57ac2bbd001b46817b9b00e763cb
+# good: [4723308ff5ab437d2b0892e7cdac86d490495a9b] net/http: make a test fail harder, earlier
+git bisect good 4723308ff5ab437d2b0892e7cdac86d490495a9b
+# first bad commit: [e6d8bfe218a5f387d7aceddcaee5067a59181838] os/exec: fix Command with relative paths

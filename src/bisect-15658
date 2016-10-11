@@ -1,0 +1,69 @@
+#!/bin/sh
+
+GO=""
+CwD=""
+
+clean_goroot() {
+	git add .
+	git status
+	git stash
+	git stash drop
+
+	# older builds require mecurial, or a VERSION
+	git reflog | awk '{print $1; exit 0;}' >> VERSION
+}
+
+build_go() {
+	clean_goroot
+
+	cd src
+	bash make.bash
+}
+
+get_goversion_tag() {
+	$GO version | awk '{print $3;}'
+}
+
+get_binary_name() {
+	echo "${1%.go}-bisect-$(get_goversion_tag)"
+}
+
+cleanup() {
+	cd "$CWD"
+}
+
+main() {
+	CWD="$(pwd)"
+	local srcpath="$1"
+	local srcfile="$2"
+	local binfile=""
+	local ret=0
+
+	if [ -z "$GOROOT" ]; then
+		echo "GOROOT undefined." >&2
+		exit 125
+	fi
+
+	GO="$GOROOT/bin/go"
+	if [ "$CWD" != "$GOROOT" ]; then
+		cd "$GOROOT"
+	fi
+
+	build_go
+	binfile="$(get_binary_name "$srcfile")"
+
+	echo "$binfile, $srcfile"
+
+	cd "$srcpath"
+	$GO build -o "$binfile" "$srcfile"
+
+	GOMAXPROCS=8 GOGC=5 GODEBUG=gctrace=2,schedtrace=100 ./$binfile
+	ret="$?"
+
+	cd "$CWD"
+
+	echo "Process exited with code $ret"
+	exit $ret
+}
+
+main "$@"
