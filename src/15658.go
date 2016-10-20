@@ -46,11 +46,11 @@ func run(done chan struct{}) {
 func main() {
 	fmt.Println("Starting a bunch of goroutines...")
 
-	runs := 0
+	var runs uint64
 	// longest number of garbage collections without crash observed to date
-	const maxgc = 25236291
+	var maxgc uint64 = 25236291
 	// runs ~= 60/gc
-	const maxruns = 2 * 60 * maxgc
+	var maxruns uint64 = 2 * 60 * maxgc
 
 	// 8 & 16 are arbitrary
 	done := make(chan struct{}, 16)
