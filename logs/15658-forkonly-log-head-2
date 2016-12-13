@@ -1,0 +1,144 @@
+[derek@dev ~/dev/gopath/src/goruntimetesting/src]$ date; GOMAXPROCS=8 GOGC=off ../bin/15658-forkonly-$($GOROOT/bin/go version | awk '{print $4}'); date
+Sun Dec 11 07:30:34 EST 2016
+exec'ing a bunch of goroutines...
+acquirep: p->m=842350797824(5) p->status=1
+fatal error: acquirep: invalid p state
+acquirep: p->m=0(0) p->status=3
+fatal error: acquirep: invalid p state
+
+runtime stack:
+runtime.throw(0x4a4dbc, 0x19)
+        /home/derek/godev/src/runtime/panic.go:596 +0x95
+runtime.acquirep1(0xc420018000)
+        /home/derek/godev/src/runtime/proc.go:3613 +0x16b
+runtime.acquirep(0xc420018000)
+        /home/derek/godev/src/runtime/proc.go:3585 +0x2b
+runtime.stopm()
+        /home/derek/godev/src/runtime/proc.go:1629 +0x123
+runtime.findrunnable(0xc420020600, 0x0)
+        /home/derek/godev/src/runtime/proc.go:2072 +0x2e4
+runtime.schedule()
+        /home/derek/godev/src/runtime/proc.go:2192 +0x14c
+runtime.goexit0(0xc42005d520)
+        /home/derek/godev/src/runtime/proc.go:2329 +0x238
+runtime.mcall(0x0)
+        /home/derek/godev/src/runtime/asm_amd64.s:256 +0x5b
+
+goroutine 1 [chan receive]:
+main.main()
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:64 +0x138
+
+goroutine 12572301 [semacquire]:
+sync.runtime_SemacquireMutex(0x510714)
+        /home/derek/godev/src/runtime/sema.go:62 +0x34
+sync.(*Mutex).Lock(0x510710)
+        /home/derek/godev/src/sync/mutex.go:87 +0x9d
+sync.(*RWMutex).Lock(0x510710)
+        /home/derek/godev/src/sync/rwmutex.go:86 +0x2d
+syscall.ForkOnlyBSDTest()
+        /home/derek/godev/src/syscall/exec_bsd.go:264 +0x39
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:39 +0x22
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+goroutine 12572316 [runnable]:
+syscall.Syscall6(0x7, 0x70d, 0xc4200f673c, 0x0, 0x0, 0x0, 0x0, 0x70d, 0x0, 0x0)
+        /home/derek/godev/src/syscall/asm_unix_amd64.s:42 +0x5
+syscall.wait4(0x70d, 0xc4200f673c, 0x0, 0x0, 0x510710, 0xc4200f6740, 0x42dc8e)
+        /home/derek/godev/src/syscall/zsyscall_freebsd_amd64.go:34 +0x88
+syscall.Wait4(0x70d, 0xc4200f678c, 0x0, 0x0, 0x70d, 0x0, 0x0)
+        /home/derek/godev/src/syscall/syscall_bsd.go:129 +0x51
+syscall.ForkOnlyBSDTest()
+        /home/derek/go:286 +0xf6
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:39 +0x22
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+goroutine 12572343 [semacquire]:
+sync.runtime_SemacquireMutex(0x510714)
+        /home/derek/godev/src/runtime/sema.go:62 +0x34
+sync.(*Mutex).Lock(0x510710)
+        /home/derek/godev/src/sync/mutex.go:87 +0x9d
+sync.(*RWMutex).Lock(0x510710)
+        /home/derek/godev/src/sync/rwmutex.go:86 +0x2d
+syscall.ForkOnlyBSDTest()
+        /home/derek/godev/src/syscall/exec_bsd.go:264 +0x39
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:39 +0x22
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+goroutine 12572333 [semacquire]:
+sync.runtime_SemacquireMutex(0x510714)
+        /home/derek/godev/src/runtime/sema.go:62 +0x34
+sync.(*Mutex).Lock(0x510710)
+        /home/derek/godev/src/sync/mutex.go:87 +0x9d
+sync.(*RWMutex).Lock(0x510710)
+        /home/derek/godev/src/sync/rwmutex.go:86 +0x2d
+syscall.ForkOnlyBSDTest()
+        /home/derek/godev/src/syscall/exec_bsd.go:264 +0x39
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:39 +0x22
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+goroutine 12572354 [semacquire]:
+sync.runtime_SemacquireMutex(0x510714)
+        /home/derek/godev/src/runtime/sema.go:62 +0x34
+sync.(*Mutex).Lock(0x510710)
+        /home/derek/godev/src/sync/mutex.go:87 +0x9d
+sync.(*RWMutex).Lock(0x510710)
+        /home/derek/godev/src/sync/rwmutex.go:86 +0x2d
+syscall.ForkOnlyBSDTest()
+        /home/derek/godev/src/syscall/exec_bsd.go:264 +0x39
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:39 +0x22
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+goroutine 12572344 [runnable]:
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:37
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+goroutine 12572345 [runnable]:
+sync.(*Mutex).Unlock(0x510710)
+        /home/derek/godev/src/sync/mutex.go:104 +0xb4
+sync.(*RWMutex).Unlock(0x510710)
+        /home/derek/godev/src/sync/rwmutex.go:125 +0x84
+syscall.ForkOnlyBSDTest()
+        /home/derek/godev/src/syscall/exec_bsd.go:276 +0xbe
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:39 +0x22
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+goroutine 12572386 [runnable]:
+sync.runtime_Semrelease(0x510714)
+        /home/derek/godev/src/runtime/sema.go:57 +0x2b
+sync.(*Mutex).Unlock(0x510710)
+        /home/derek/godev/src/sync/mutex.go:126 +0x81
+sync.(*RWMutex).Unlock(0x510710)
+        /home/derek/godev/src/sync/rwmutex.go:125 +0x84
+syscall.ForkOnlyBSDTest()
+        /home/derek/godev/src/syscall/exec_bsd.go:276 +0xbe
+main.run(0xc42006e060)
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:39 +0x22
+created by main.main
+        /home/derek/dev/gopath/src/goruntimetesting/src/15658-forkonly.go:65 +0x15a
+
+runtime stack:
+runtime.throw(0x4a4dbc, 0x19)
+        /home/derek/godev/src/runtime/panic.go:596 +0x95
+runtime.acquirep1(0xc42001cc00)
+        /home/derek/godev/src/runtime/proc.go:3613 +0x16b
+runtime.acquirep(0xc42001cc00)
+        /home/derek/godev/src/runtime/proc.go:3585 +0x2b
+runtime.exitsyscall0(0xc4200f36c0)
+        /home/derek/godev/src/runtime/proc.go:2733 +0x119
+runtime.mcall(0x0)
+        /home/derek/godev/src/runtime/asm_amd64.s:256 +0x5b
+Mon Dec 12 06:44:28 EST 2016
