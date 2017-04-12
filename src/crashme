@@ -1,0 +1,60 @@
+#!/bin/sh
+
+GOGC="${GOGC:-off}"
+GOMAXPROCS="${GOMAXPROCS:-12}"
+
+log() {
+	printf "=== %s - %s\n" "$(date)" "$1"
+}
+
+cleanup() {
+	if [ ! -z "$PID" ]; then
+		kill "$PID"
+	fi
+}
+
+PID=""
+spawnbin() {
+	if ! ps -p "$PID" 2> /dev/null > /dev/null; then
+		log "Starting new instance"
+		"$1" &
+		PID=$!
+	fi
+}
+
+poll() {
+	if [ -z "$PID" ]; then
+		return
+	fi
+
+	local idlecount=0
+
+	ps -uH -p "$PID" | while read _ _ cpu _; do
+		if [ "$cpu" == "%CPU" ]; then
+			continue
+		fi
+
+		if [ "${cpu%%\.*}" -lt 1 ]; then
+			idlecount="$(( $idlecount + 1 ))"
+		fi
+
+		if [ "$idlecount" -gt 6 ]; then
+			log "Killing wedged $PID"
+			kill "$PID"
+			return
+		fi
+	done
+
+	sleep 5
+}
+
+main() {
+	local bin="$1"
+
+	trap cleanup EXIT
+	while spawnbin "$bin"; do
+		poll
+	done
+}
+
+main "$@"
