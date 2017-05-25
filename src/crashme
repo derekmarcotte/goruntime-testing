@@ -1,7 +1,8 @@
 #!/bin/sh
 
 GOGC="${GOGC:-off}"
-GOMAXPROCS="${GOMAXPROCS:-12}"
+GOMAXPROCS="${GOMAXPROCS:-8}"
+IDLETHRESHOLD="${IDLETHRESHOLD:-$(( $GOMAXPROCS / 2))}"
 
 log() {
 	printf "=== %s - %s\n" "$(date)" "$1"
@@ -11,14 +12,20 @@ cleanup() {
 	if [ ! -z "$PID" ]; then
 		kill "$PID"
 	fi
+
+	if [ -e "$FIFO" ]; then
+		rm "$FIFO"
+	fi
+
+	exit 0
 }
 
 PID=""
 spawnbin() {
 	if ! ps -p "$PID" 2> /dev/null > /dev/null; then
-		log "Starting new instance"
 		"$1" &
 		PID=$!
+		log "Starting new instance $PID"
 	fi
 }
 
@@ -27,31 +34,47 @@ poll() {
 		return
 	fi
 
-	local idlecount=0
+	sleep 5
+	if [ -z "$KILLIDLE" ]; then
+		return
+	fi
 
-	ps -uH -p "$PID" | while read _ _ cpu _; do
+	local busycount=0
+
+	ps -uH -p "$PID" > "$FIFO" &
+	while read _ _ cpu _; do
 		if [ "$cpu" == "%CPU" ]; then
 			continue
 		fi
 
-		if [ "${cpu%%\.*}" -lt 1 ]; then
-			idlecount="$(( $idlecount + 1 ))"
+		if [ "${cpu%%\.*}" -gt 5 ]; then
+			busycount="$(( $busycount + 1 ))"
 		fi
+	done < "$FIFO"
 
-		if [ "$idlecount" -gt 6 ]; then
-			log "Killing wedged $PID"
-			kill "$PID"
-			return
-		fi
-	done
-
-	sleep 5
+	if [ "$busycount" -lt "$IDLETHRESHOLD" ]; then
+		log "Killing wedged $PID"
+		kill "$PID"
+		return
+	fi
 }
 
+FIFO=""
 main() {
 	local bin="$1"
 
-	trap cleanup EXIT
+	FIFO="$(mktemp -u)"
+
+	echo "Running with: "
+	echo "  GOGC: $GOGC"
+	echo "  GOMAXPROCS: $GOMAXPROCS"
+	echo "  KILLIDLE: $KILLIDLE"
+	echo "  IDLETHRESHOLD: $IDLETHRESHOLD"
+	echo
+
+	mkfifo "$FIFO"
+	trap cleanup SIGQUIT
+	trap cleanup SIGINT
 	while spawnbin "$bin"; do
 		poll
 	done
