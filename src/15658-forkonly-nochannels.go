@@ -1,6 +1,7 @@
 package main
 
 import (
+	"runtime"
 	"syscall"
 )
 
@@ -11,7 +12,7 @@ func run() {
 }
 
 func main() {
-	forkRoutines := 8
+	forkRoutines := runtime.GOMAXPROCS(0)
 
 	for i := 0; i < forkRoutines; i++ {
 		go run()
